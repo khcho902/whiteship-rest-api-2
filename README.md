@@ -8,3 +8,9 @@
 ### 변경사항
 - postgresql => mysql<br>
 - maven => gradle 
+
+### 실행 script
+```shell
+./gradlew build
+java -jar build/libs/demo-0.0.1-SNAPSHOT.jar
+```
