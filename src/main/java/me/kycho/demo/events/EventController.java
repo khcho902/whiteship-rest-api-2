@@ -47,7 +47,7 @@ public class EventController {
 
         EventEntityModel eventEntityModel = new EventEntityModel(newEvent);
         eventEntityModel.add(linkTo(EventController.class).withRel("query-events"));
-        eventEntityModel.add(selfLinkBuilder.withRel("update-events"));
+        eventEntityModel.add(selfLinkBuilder.withRel("update-event"));
 
         return ResponseEntity.created(createdUri).body(eventEntityModel);
     }
