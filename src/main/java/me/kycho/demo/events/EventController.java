@@ -1,7 +1,9 @@
 package me.kycho.demo.events;
 
 import lombok.RequiredArgsConstructor;
+import me.kycho.demo.commons.ErrorsEntityModel;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -30,12 +32,12 @@ public class EventController {
     public ResponseEntity createEvent(@RequestBody @Valid  EventDto eventDto, Errors errors) {
 
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         eventValidator.validate(eventDto, errors);
         if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
@@ -51,6 +53,10 @@ public class EventController {
         eventEntityModel.add(selfLinkBuilder.withRel("update-event"));
         eventEntityModel.add(Link.of("/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createdUri).body(eventEntityModel);
+    }
+
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsEntityModel(errors));
     }
 
 }
