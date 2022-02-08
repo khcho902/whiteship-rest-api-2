@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.6.3'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'org.asciidoctor.convert' version '1.5.8'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'java'
 }
 
@@ -13,14 +13,11 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
 }
 
 repositories {
     mavenCentral()
-}
-
-ext {
-    set('snippetsDir', file("build/generated-snippets"))
 }
 
 dependencies {
@@ -34,16 +31,40 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.0.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
     runtimeOnly 'com.h2database:h2'  // TODO : testImplementation 변경 예정
 }
 
-tasks.named('test') {
+ext {
+    snippetsDir = file('build/generated-snippets')
+}
+
+test {
     outputs.dir snippetsDir
     useJUnitPlatform()
 }
 
-tasks.named('asciidoctor') {
+asciidoctor {
     inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
 }
+
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}") {
+        into 'BOOT-INF/classes/static/docs'
+    }
+}
+
+//https://docs.gradle.org/7.3.3/dsl/org.gradle.api.tasks.Copy.html#N20D2C
+//task copyDocs(type: Copy) {
+//    dependsOn asciidoctor
+//    from 'build/docs/asciidoc'
+//    into 'build/resources/main/static/docs'
+//}
+//
+//bootJar {
+//    dependsOn copyDocs
+//}
