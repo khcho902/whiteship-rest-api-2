@@ -2,6 +2,7 @@ package me.kycho.demo.events;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,7 @@ public class EventController {
         EventEntityModel eventEntityModel = new EventEntityModel(newEvent);
         eventEntityModel.add(linkTo(EventController.class).withRel("query-events"));
         eventEntityModel.add(selfLinkBuilder.withRel("update-event"));
-
+        eventEntityModel.add(Link.of("/docs/index.html#resources-events-create").withRel("profile"));
         return ResponseEntity.created(createdUri).body(eventEntityModel);
     }
 
