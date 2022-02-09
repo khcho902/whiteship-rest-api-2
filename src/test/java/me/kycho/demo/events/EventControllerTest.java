@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
@@ -211,13 +212,15 @@ class EventControllerTest {
         IntStream.range(0, 30).forEach(this::generateEvent);
 
         // When
-        this.mockMvc.perform(
+        ResultActions perform = this.mockMvc.perform(
                 get("/api/events")
                         .param("page", "1")
                         .param("size", "10")
                         .param("sort", "name,DESC")
-                )
-                .andDo(print())
+        );
+
+        // Then
+        perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("page").exists())
                 .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
@@ -228,13 +231,41 @@ class EventControllerTest {
         ;
     }
 
-    private void generateEvent(int index) {
+    @Test
+    @DisplayName("기존의 이벤트를 하나 조회하기")
+    void getEvent() throws Exception {
+        // given
+        Event event = this.generateEvent(100);
+
+        // when & then
+        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-an-event"))
+                // 문서화 더해야하는데 안했음....
+        ;
+    }
+
+    @Test
+    @DisplayName("없는 이벤트를 조회했을때 404 응답받기")
+    void getEvent404() throws Exception {
+
+        // when & then
+        this.mockMvc.perform(get("/api/events/12323"))
+                .andExpect(status().isNotFound())
+        ;
+    }
+
+    private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("event " + index)
                 .description("test event")
                 .build();
 
-        this.eventRepository.save(event);
+        return this.eventRepository.save(event);
     }
 
 
