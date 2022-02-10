@@ -4,7 +4,6 @@ import me.kycho.demo.accounts.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
-//@Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -26,6 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    // TODO : Deprecated 확인 필요
     @Bean
     public TokenStore tokenStore() {
         return new InMemoryTokenStore();
@@ -58,15 +57,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
 
+    /*  리소스 서버 설정에서 비슷한 설정을 할거라서 주석처리함
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .anonymous()
+                .anonymous()  // TODO : 이부분 이해안됨.  https://www.inflearn.com/questions/71433
                 .and()
                 .formLogin()
                 .and()
                 .authorizeRequests()
                 .mvcMatchers(HttpMethod.GET, "/api/**").authenticated()
                 .anyRequest().authenticated();
-    }
+    }*/
 }
