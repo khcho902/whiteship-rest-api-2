@@ -2,6 +2,7 @@ package me.kycho.demo.configs;
 
 import lombok.RequiredArgsConstructor;
 import me.kycho.demo.accounts.AccountService;
+import me.kycho.demo.commons.AppProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,6 +22,7 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     private final AuthenticationManager authenticationManager;
     private final AccountService accountService;
     private final TokenStore tokenStore;
+    private final AppProperties appProperties;
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
@@ -31,10 +33,10 @@ public class AuthServerConfig extends AuthorizationServerConfigurerAdapter {
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // clients.jdbc()  // db 사용해서 하는게 좋지만 간단하게 아래처럼 했음
         clients.inMemory()
-                .withClient("myApp")
+                .withClient(appProperties.getClientId())
+                .secret(this.passwordEncoder.encode(appProperties.getClientSecret()))
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("read", "write")
-                .secret(this.passwordEncoder.encode("pass"))
                 .accessTokenValiditySeconds(10 * 60)  // 10분
                 .refreshTokenValiditySeconds(6 * 10 * 60) // 1시간
         ;

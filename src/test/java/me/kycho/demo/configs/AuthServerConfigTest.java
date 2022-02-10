@@ -4,6 +4,7 @@ import me.kycho.demo.accounts.Account;
 import me.kycho.demo.accounts.AccountRole;
 import me.kycho.demo.accounts.AccountService;
 import me.kycho.demo.common.BaseControllerTest;
+import me.kycho.demo.commons.AppProperties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,27 +23,18 @@ class AuthServerConfigTest extends BaseControllerTest {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    AppProperties appProperties;
+
     @Test
     @DisplayName("인증 토큰을 발급 받는 테스트")
     void getAuthToken() throws Exception {
 
-        // given
-        String username = "testuser@email.com";
-        String password = "admin1234";
-        Account account = Account.builder().email(username)
-                .password(password)
-                .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
-                .build();
-        this.accountService.saveAccount(account);
-
-        String clientId = "myApp";
-        String clientSecret = "pass";
-
         this.mockMvc.perform(
                 post("/oauth/token")
-                        .with(httpBasic(clientId, clientSecret))
-                        .param("username", username)
-                        .param("password", password)
+                        .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                        .param("username", appProperties.getUserUsername())
+                        .param("password", appProperties.getUserPassword())
                         .param("grant_type", "password")
                 )
                 .andDo(print())

@@ -57,3 +57,8 @@ spring.datasource.driver-class-name=org.h2.Driver
 spring.datasource.hikari.jdbc-url=jdbc:h2:mem:testdb
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
 ```
+
+### 실행중인 톰캣 확인
+```shell
+ps ax | grep tomcat
+```

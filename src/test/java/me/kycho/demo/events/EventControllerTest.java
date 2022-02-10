@@ -5,18 +5,17 @@ import me.kycho.demo.accounts.AccountRepository;
 import me.kycho.demo.accounts.AccountRole;
 import me.kycho.demo.accounts.AccountService;
 import me.kycho.demo.common.BaseControllerTest;
+import me.kycho.demo.commons.AppProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.boot.json.JsonParser;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.oauth2.common.util.Jackson2JsonParser;
-import org.springframework.test.annotation.Commit;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -42,6 +41,9 @@ class EventControllerTest extends BaseControllerTest {
 
     @Autowired
     AccountRepository accountRepository;
+
+    @Autowired
+    AppProperties appProperties;
 
     @BeforeEach
     void setUp() {
@@ -142,26 +144,25 @@ class EventControllerTest extends BaseControllerTest {
 
     private String getAccessToken() throws Exception {
         // given
-        String username = "testuser@email.com";
-        String password = "admin1234";
-        Account account = Account.builder().email(username)
-                .password(password)
+        Account account = Account.builder()
+                .email(appProperties.getUserUsername())
+                .password(appProperties.getUserPassword())
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
         this.accountService.saveAccount(account);
 
-        String clientId = "myApp";
-        String clientSecret = "pass";
-
         ResultActions perform = this.mockMvc.perform(
                 post("/oauth/token")
-                        .with(httpBasic(clientId, clientSecret))
-                        .param("username", username)
-                        .param("password", password)
+                        .with(httpBasic(appProperties.getClientId(), appProperties.getClientSecret()))
+                        .param("username", appProperties.getUserUsername())
+                        .param("password", appProperties.getUserPassword())
                         .param("grant_type", "password")
         );
         String responseBody = perform.andReturn().getResponse().getContentAsString();
-        Jackson2JsonParser parser = new Jackson2JsonParser();  // TODO deprecated 확인 필요
+
+        //Jackson2JsonParser parser = new Jackson2JsonParser();  // TODO deprecated 확인 필요 (일단 아래껄로 바꿈)
+        JsonParser parser = new JacksonJsonParser();
+
         return parser.parseMap(responseBody).get("access_token").toString();
     }
 
