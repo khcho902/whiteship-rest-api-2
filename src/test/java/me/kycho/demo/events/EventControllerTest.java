@@ -4,7 +4,7 @@ import me.kycho.demo.accounts.Account;
 import me.kycho.demo.accounts.AccountRepository;
 import me.kycho.demo.accounts.AccountRole;
 import me.kycho.demo.accounts.AccountService;
-import me.kycho.demo.common.BaseControllerTest;
+import me.kycho.demo.common.BaseTest;
 import me.kycho.demo.commons.AppProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class EventControllerTest extends BaseControllerTest {
+class EventControllerTest extends BaseTest {
 
     @Autowired
     EventRepository eventRepository;
