@@ -64,20 +64,20 @@ asciidoctor {
     dependsOn test
 }
 
-bootJar {
-    dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}") {
-        into 'BOOT-INF/classes/static/docs'
-    }
-}
+//bootJar {
+//    dependsOn asciidoctor
+//    from ("${asciidoctor.outputDir}") {
+//        into 'BOOT-INF/classes/static/docs'
+//    }
+//}
 
 //https://docs.gradle.org/7.3.3/dsl/org.gradle.api.tasks.Copy.html#N20D2C
-//task copyDocs(type: Copy) {
-//    dependsOn asciidoctor
-//    from 'build/docs/asciidoc'
-//    into 'build/resources/main/static/docs'
-//}
-//
-//bootJar {
-//    dependsOn copyDocs
-//}
+task copyDocs(type: Copy) {
+    dependsOn asciidoctor
+    from 'build/docs/asciidoc'
+    into 'build/resources/main/static/docs'
+}
+
+bootJar {
+    dependsOn copyDocs
+}
