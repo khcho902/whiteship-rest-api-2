@@ -128,7 +128,11 @@ class EventControllerTest extends BaseControllerTest {
                                 fieldWithPath("free").description("it tells if this event is free or not"),
                                 fieldWithPath("offline").description("it tells if this event is offline event or not"),
                                 fieldWithPath("eventStatus").description("event status"),
-                                fieldWithPath("manager").description("event manager"),
+//                                fieldWithPath("manager").description("event manager"),
+//                                fieldWithPath("manager.id").description("event manager"),
+//                                fieldWithPath("manager.email").description("event manager"),
+//                                fieldWithPath("manager.password").description("event manager"),
+//                                fieldWithPath("manager.roles").description("event manager"),
                                 fieldWithPath("_links.self.href").description("link to self"),
                                 fieldWithPath("_links.query-events.href").description("link to query event list"),
                                 fieldWithPath("_links.update-event.href").description("links to update an existing event"),
@@ -267,6 +271,34 @@ class EventControllerTest extends BaseControllerTest {
                 .andExpect(jsonPath("_links.profile").exists())
                 .andDo(document("query-events"))
                 // 문서화 더해야하는데 안했음....
+        ;
+    }
+
+    @Test
+    @DisplayName("30개의 이벤트를 10개씩 두번째 페이지 조회하기")
+    public void queryEventsWithAuthentication() throws Exception {
+        // Given
+        IntStream.range(0, 30).forEach(this::generateEvent);
+
+        // When
+        ResultActions perform = this.mockMvc.perform(
+                get("/api/events")
+                        .header(HttpHeaders.AUTHORIZATION, getBearerToken())
+                        .param("page", "1")
+                        .param("size", "10")
+                        .param("sort", "name,DESC")
+        );
+
+        // Then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andExpect(jsonPath("_links.create-event").exists())
+                .andDo(document("query-events"))
+        // 문서화 더해야하는데 안했음....
         ;
     }
 
