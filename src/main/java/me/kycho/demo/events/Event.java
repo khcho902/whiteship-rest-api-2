@@ -1,7 +1,9 @@
 package me.kycho.demo.events;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import me.kycho.demo.accounts.Account;
+import me.kycho.demo.accounts.AccountSerializer;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -27,6 +29,7 @@ public class Event {
     private boolean free;
     @Enumerated(EnumType.STRING) @Builder.Default
     private EventStatus eventStatus = EventStatus.DRAFT;
+    @JsonSerialize(using = AccountSerializer.class)
     @ManyToOne
     private Account manager;
 
