@@ -30,6 +30,12 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.modelmapper:modelmapper:3.0.0'
 
+    // OAuth 2.0 Authorization Server 기능은 아직 Spring Security에서 지원하지 않음. ( 결국 나중에는 지원할 예정임 )
+    // Spring Security OAuth 프로젝트에서는 가능한데 아래의 라이브러리를 사용하면 Spring Security OAuth를 사용 가능함.
+    // https://docs.spring.io/spring-boot/docs/2.6.3/reference/htmlsingle/#web.security.oauth2.authorization-server
+    // https://mvnrepository.com/artifact/org.springframework.security.oauth.boot/spring-security-oauth2-autoconfigure
+    implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.6.3'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
